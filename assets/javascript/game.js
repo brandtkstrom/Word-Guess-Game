@@ -20,9 +20,11 @@ const countries = [
     'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe'
 ];
 
-// Returns a random country as a string value
+// Returns a random country name string
 function getRandomCountry() {
+
     let randomIndex = Math.floor(Math.random() * countries.size);
+
     return countries[randomIndex];
 }
 
