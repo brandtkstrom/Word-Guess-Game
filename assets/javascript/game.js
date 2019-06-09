@@ -53,10 +53,10 @@ let wordGenerator = {
         let excessSpaceRegex = /\s{2,}/g;
 
         if (specialCharsRegex.test(text)) {
-            text = specialCharsRegex.exec(text)[0];
+            text = text.replace(specialCharsRegex, '');
         }
         if (excessSpaceRegex.test(text)) {
-            text = excessSpaceRegex.exec(text)[0];
+            text = text.replace(excessSpaceRegex, '');
         }
 
         return text;
