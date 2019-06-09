@@ -35,7 +35,31 @@ let wordGenerator = {
         let resource = `word.json/${word}/definitions`;
         let requestUri = `${apiUri}/${resource}?api_key=${apiKey}`;
 
-        fetch(requestUri).then(res => console.log(res.json()));
+        fetch(requestUri)
+            .then(res => {
+                let response = res.json();
+                console.log(response);
+
+                return response.word ? response.word : '';
+            })
+            .catch(error => {
+                console.log(error);
+                throw error;
+            });
+    },
+    'formatText': function (text) {
+
+        let specialCharsRegex = /<\/?\w+>/gi;
+        let excessSpaceRegex = /\s{2,}/g;
+
+        if (specialCharsRegex.test(text)) {
+            text = specialCharsRegex.exec(text)[0];
+        }
+        if (excessSpaceRegex.test(text)) {
+            text = excessSpaceRegex.exec(text)[0];
+        }
+
+        return text;
     }
 };
 
