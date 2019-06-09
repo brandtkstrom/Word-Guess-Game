@@ -14,11 +14,20 @@ let wordGenerator = {
     },
     'getRandomWord': function () {
 
-        //TODO
         let resource = 'words.json/randomWord';
         let requestUri = `${apiUri}/${resource}?api_key=${apiKey}`;
 
-        fetch(requestUri).then(res => console.log(res.json()));
+        fetch(requestUri)
+            .then(res => {
+                let response = res.json();
+                console.log(response);
+
+                return response.word ? response.word : '';
+            })
+            .catch(error => {
+                console.log(error);
+                throw error;
+            });
     },
     'getDefinition': function (word) {
 
