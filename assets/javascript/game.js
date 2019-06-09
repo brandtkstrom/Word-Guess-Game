@@ -1,48 +1,71 @@
-// Array to hold country names
-const countries = ['Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'The Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burma', 'Burundi', 'Cabo Verde', 'Cambodia', 'Cameroon', 'Canada', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'The Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'North Korea', 'South Korea', 'Kosovo', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'North Macedonia', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Rwanda', 'Samoa', 'San Marino', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tonga', 'Trinidad', 'Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe'];
+const apiUri = 'http://api.wordnik.com/v4';
+const apiKey = '38neaaotr4l4p0b3vujuiu1jg1s7xgg1ydagjylqkrdyz2ieh';
 
-// Returns a random country name lower case char array
-function getRandomCountry() {
+// This object contains word information and functions to fetch
+// random words and definitions through external api calls.
+let wordGenerator = {
+    'word': [],
+    'definition': '',
+    'generate': function () {
+        //TODO
+        // get random word
+        // look up definition
+        // update this word, definition vars
+    },
+    'getRandomWord': function () {
 
-    let randomIndex = Math.floor(Math.random() * countries.length);
+        //TODO
+        let resource = 'words.json/randomWord';
+        let requestUri = `${apiUri}/${resource}?api_key=${apiKey}`;
 
-    return countries[randomIndex].toLowerCase().split('');
+        fetch(requestUri).then(res => console.log(res.json()));
+    },
+    'getDefinition': function (word) {
+
+        //TODO
+        let resource = `word.json/${word}/definitions`;
+        let requestUri = `${apiUri}/${resource}?api_key=${apiKey}`;
+
+        fetch(requestUri).then(res => console.log(res.json()));
+    }
 };
 
+// This object holds information about the game
 let game = {
     'started': false,
     'maxGuesses': 12,
     'guessCount': 0,
-    'country': getRandomCountry(),
+    'wordGenerator': wordGenerator,
+    'word': [],
     'mask': [],
+    'definition': '',
     'guesses': new Map(),
     'setMask': function () {
-        this.mask = this.country.slice().fill('_');
-        this.mask.forEach((v, i) => {
-            if (this.country[i] === ' ') {
-                this.mask[i] = ' ';
-            }
-        });
+        this.mask = this.word.slice().fill('_');
     },
     'startGame': function () {
         // TODO
         this.initGame();
     },
     'initGame': function () {
+
         // TODO
-        this.guessCount = 0;
-        this.country = getRandomCountry();
+        this.wordGenerator.generate();
+        this.word = this.wordGenerator.word;
+        this.definition = this.wordGenerator.definition;
+
         this.setMask();
+        this.guessCount = 0;
         this.started = true;
     },
     'charAlreadyGuessed': function (char) {
         return this.guesses.has(char);
     },
-    'countryContainsChar': function (char) {
+    'wordContainsChar': function (char) {
 
         let matchedIndicies = [];
 
-        this.country.forEach((c, i) => {
+        this.word.forEach((c, i) => {
             if (c === char) {
                 matchedIndicies.push(i);
             }
@@ -54,10 +77,6 @@ let game = {
     }
 };
 
-let matches = game.countryContainsChar('a');
-console.log(`Matches: ${matches}`);
-
 this.document.onkeyup = function (evt) {
-
     // TODO
 }
