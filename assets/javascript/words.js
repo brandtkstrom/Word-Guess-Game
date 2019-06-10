@@ -1,4 +1,4 @@
-const words = [
+const WORDS = [
     'time',
     'way',
     'year',

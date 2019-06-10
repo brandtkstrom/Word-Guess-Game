@@ -31,28 +31,30 @@ let wordGenerator = {
     },
     'getRandomWord': function () {
 
-        let randomNum = Math.floor(Math.random() * words.length);
-        let word = words[randomNum];
+        // Pulls a random word from the 'WORDS' array - in words.js
+        let randomNum = Math.floor(Math.random() * WORDS.length);
+        let word = WORDS[randomNum];
         console.log(`Random word: ${word}`);
 
         return word;
     },
     'getDefinition': async function (word) {
 
+        // Retrieves a definition for our word using the Wordnik API.
         let resource = `word.json/${word}/definitions`;
         let requestUri = `${apiUri}/${resource}?${apiUriParms}`;
 
         let response = await fetch(requestUri);
         if (response.status !== 200) {
-            // Unknown error encountered
-            // todo - maybe return default value to use?
+
+            // Unknown error encountered. Just return no hint in this case.
             console.log(`Error fetching word definition: ${response.message}`);
             return 'Sorry, no hint this time!';
         }
 
         let definitions = await response.json();
 
-        // Find a definition that exists for our word
+        // Find a definition that exists for our word.
         let wordDefinition = definitions.find(d => d.text && typeof (d.text) === 'string');
         let formatted = this.formatText(wordDefinition.text);
 
@@ -61,6 +63,7 @@ let wordGenerator = {
     },
     'formatText': function (text) {
 
+        // Strips special characters, tags, and extra whitespace from the provided string.
         let specialCharsRegex = /[<]{1}[/]?[a-z"= ]{1,}[>]{1}|\s+[.]{1}$/gi;
         let excessSpaceRegex = /\s{2,}/g;
 
@@ -80,6 +83,7 @@ let game = {
     'started': false,
     'maxGuesses': 12,
     'guessCount': 0,
+    'wordsMatched': 0,
     'wordGenerator': wordGenerator,
     'word': [],
     'mask': [],
@@ -87,6 +91,12 @@ let game = {
     'guesses': new Map(),
     'setMask': function () {
         this.mask = [...this.word].fill('_');
+    },
+    'updateMask': function (char) {
+        let matches = this.guesses.get(char);
+        matches.forEach(idx => {
+            this.mask[idx] = char;
+        });
     },
     'startGame': function () {
         // TODO
@@ -105,10 +115,14 @@ let game = {
         console.log(this);
     },
     'charAlreadyGuessed': function (char) {
+
+        // Checks to see if this char has already been guessed.
         return this.guesses.has(char);
     },
     'wordContainsChar': function (char) {
 
+        // Does our word contain the provided (guessed) char? If so,
+        // note the matching indicies and return True or False.
         let matchedIndicies = [];
 
         this.word.forEach((c, i) => {
@@ -120,11 +134,37 @@ let game = {
         this.guesses.set(char, matchedIndicies);
 
         return matchedIndicies.length > 0;
+    },
+    'guess': function (char) {
+
+        // TODO
+        if (this.charAlreadyGuessed(char)) {
+
+            console.log(`${char} already guessed.`);
+            return;
+        }
+        if (this.wordContainsChar(char)) {
+
+            console.log(`${char} is a match.`);
+            this.updateMask(char);
+            // TODO...
+            // check to see if word fully guessed
+            //      if done, this.wordsMatched++
+            // update counters, generate new word
+        } else {
+
+            console.log(`${char} is NOT a match.`);
+            this.guessCount++;
+            // TODO...
+        }
     }
 };
 
 this.document.onkeyup = function (evt) {
     // TODO
+    // check if game started -> start if not
+
+    game.guess(evt.key);
 }
 
 game.initGame();
