@@ -1,67 +1,89 @@
 const apiUri = 'http://api.wordnik.com/v4';
 const apiKey = '38neaaotr4l4p0b3vujuiu1jg1s7xgg1ydagjylqkrdyz2ieh';
+const uriParams = `hasDictionaryDef=true&includePartOfSpeech=noun&maxCorpusCount=-1&minDictionaryCount=3&maxDictionaryCount=-1&minLength=4&maxLength=10&api_key=${apiKey}`;
 
 // This object contains word information and functions to fetch
 // random words and definitions through external api calls.
 let wordGenerator = {
     'word': [],
     'definition': '',
-    'generate': function () {
+    'generate': async function () {
         //TODO
         // get random word
+        let randomWord = await this.getRandomWord();
+
         // look up definition
+        let wordDefn = await this.getDefinition(randomWord);
+
         // update this word, definition vars
+        // this.word = randomWord.split('');
+        // this.definition = wordDef;
     },
-    'getRandomWord': function () {
+    'getRandomWord': async function () {
 
         let resource = 'words.json/randomWord';
-        let requestUri = `${apiUri}/${resource}?api_key=${apiKey}`;
+        let requestUri = `${apiUri}/${resource}?${uriParams}`;
 
-        fetch(requestUri)
-            .then(res => {
-                let response = res.json();
-                console.log(response);
+        let response = await fetch(requestUri);
+        if (response.status !== 200) {
+            // Unknown error encountered
+            // todo - maybe return default value to use?
+            console.log(`Error fetching random word: ${response}`);
+            return 'game';
+        }
 
-                return response.word ? response.word : '';
+        let word = await (response.json()
+            .then(data => {
+                console.log(`Random word generated: ${data.word}`);
+                return data.word;
             })
-            .catch(error => {
-                console.log(error);
-                throw error;
-            });
+            .catch(err => {
+                console.log(`Error parsing random word data to Json: ${err}`);
+                throw err;
+            }));
+
+        return word;
     },
-    'getDefinition': function (word) {
+    'getDefinition': async function (word) {
 
         //TODO
         let resource = `word.json/${word}/definitions`;
-        let requestUri = `${apiUri}/${resource}?api_key=${apiKey}`;
+        let requestUri = `${apiUri}/${resource}?${uriParams}`;
 
-        fetch(requestUri)
-            .then(res => {
-                let response = res.json();
-                console.log(response);
+        let response = await fetch(requestUri);
+        if (response.status !== 200) {
+            // Unknown error encountered
+            // todo - maybe return default value to use?
+            console.log(`Error fetching word definition: ${response.message}`);
+            return undefined;
+        }
 
-                return response.word ? response.word : '';
-            })
-            .catch(error => {
-                console.log(error);
-                throw error;
-            });
+        let definitions = await response.json();
+
+        // Find a definition that exists for our word
+        let wordDefinition = definitions.find(d => d.text);
+        let formatted = this.formatText(wordDefinition.text);
+
+        console.log(`Word definition: ${formatted}`);
+        return formatted;
     },
     'formatText': function (text) {
 
-        let specialCharsRegex = /<\/?\w+>/gi;
+        let specialCharsRegex = /[<]{1}[/]?[a-z"= ]{1,}[>]{1}|\s+[.]{1}$/gi;
         let excessSpaceRegex = /\s{2,}/g;
 
         if (specialCharsRegex.test(text)) {
             text = text.replace(specialCharsRegex, '');
         }
         if (excessSpaceRegex.test(text)) {
-            text = text.replace(excessSpaceRegex, '');
+            text = text.replace(excessSpaceRegex, ' ');
         }
 
         return text;
     }
 };
+
+wordGenerator.generate();
 
 // This object holds information about the game
 let game = {
