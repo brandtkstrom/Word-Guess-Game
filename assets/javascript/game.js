@@ -1,7 +1,7 @@
 // Wordnik API settings
 const apiUri = 'https://api.wordnik.com/v4';
 const apiKey = '38neaaotr4l4p0b3vujuiu1jg1s7xgg1ydagjylqkrdyz2ieh';
-const apiUriParms = `limit=20&partOfSpeech=noun&sourceDictionaries=all&includeRelated=false&api_key=${apiKey}`;
+const apiUriParms = `limit=20&partOfSpeech=noun,adjective,verb&sourceDictionaries=all&includeRelated=false&api_key=${apiKey}`;
 
 // This object contains word information and functions to fetch
 // random words and definitions through external api calls.

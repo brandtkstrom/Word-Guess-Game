@@ -374,7 +374,6 @@ const words = [
     'show',
     'speaker',
     'baby',
-    'arm',
     'base',
     'miss',
     'safety',
