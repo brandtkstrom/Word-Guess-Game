@@ -1,4 +1,4 @@
-const apiUri = 'http://api.wordnik.com/v4';
+const apiUri = 'https://api.wordnik.com/v4';
 const apiKey = '38neaaotr4l4p0b3vujuiu1jg1s7xgg1ydagjylqkrdyz2ieh';
 const wordParms = `hasDictionaryDef=true&includePartOfSpeech=noun&maxCorpusCount=-1&minDictionaryCount=3&maxDictionaryCount=-1&minLength=4&maxLength=10&api_key=${apiKey}`;
 const defParms = `limit=10&partOfSpeech=noun&includeRelated=false&useCanonical=false&includeTags=false&api_key=${apiKey}`;
