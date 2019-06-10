@@ -1,7 +1,7 @@
+// Wordnik API settings
 const apiUri = 'https://api.wordnik.com/v4';
 const apiKey = '38neaaotr4l4p0b3vujuiu1jg1s7xgg1ydagjylqkrdyz2ieh';
-const wordParms = `hasDictionaryDef=true&includePartOfSpeech=noun&maxCorpusCount=-1&minDictionaryCount=3&maxDictionaryCount=-1&minLength=4&maxLength=10&api_key=${apiKey}`;
-const defParms = `limit=10&partOfSpeech=noun&includeRelated=false&useCanonical=false&includeTags=false&api_key=${apiKey}`;
+const apiUriParms = `limit=20&partOfSpeech=noun&sourceDictionaries=all&includeRelated=false&api_key=${apiKey}`;
 
 // This object contains word information and functions to fetch
 // random words and definitions through external api calls.
@@ -13,7 +13,7 @@ let wordGenerator = {
         try {
 
             // get random word
-            let randomWord = await this.getRandomWord();
+            let randomWord = this.getRandomWord();
 
             // look up definition
             let wordDefn = await this.getDefinition(randomWord);
@@ -29,49 +29,31 @@ let wordGenerator = {
         // TODO - handle error case. Set default word/def.
 
     },
-    'getRandomWord': async function () {
+    'getRandomWord': function () {
 
-        let resource = 'words.json/randomWord';
-        let requestUri = `${apiUri}/${resource}?${wordParms}`;
-
-        let response = await fetch(requestUri);
-        if (response.status !== 200) {
-            // Unknown error encountered
-            // todo - maybe return default value to use?
-            console.log(`Error fetching random word: ${response}`);
-            return 'game';
-        }
-
-        let word = await (response.json()
-            .then(data => {
-                console.log(`Random word generated: ${data.word}`);
-                return data.word;
-            })
-            .catch(err => {
-                console.log(`Error parsing random word data to Json: ${err}`);
-                throw err;
-            }));
+        let randomNum = Math.floor(Math.random() * words.length);
+        let word = words[randomNum];
+        console.log(`Random word: ${word}`);
 
         return word;
     },
     'getDefinition': async function (word) {
 
-        //TODO
         let resource = `word.json/${word}/definitions`;
-        let requestUri = `${apiUri}/${resource}?${defParms}`;
+        let requestUri = `${apiUri}/${resource}?${apiUriParms}`;
 
         let response = await fetch(requestUri);
         if (response.status !== 200) {
             // Unknown error encountered
             // todo - maybe return default value to use?
             console.log(`Error fetching word definition: ${response.message}`);
-            return undefined;
+            return 'Sorry, no hint this time!';
         }
 
         let definitions = await response.json();
 
         // Find a definition that exists for our word
-        let wordDefinition = definitions.find(d => d.text);
+        let wordDefinition = definitions.find(d => d.text && typeof (d.text) === 'string');
         let formatted = this.formatText(wordDefinition.text);
 
         console.log(`Word definition: ${formatted}`);
