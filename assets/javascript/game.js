@@ -75,8 +75,6 @@ let wordGenerator = {
     }
 };
 
-wordGenerator.generate();
-
 // This object holds information about the game
 let game = {
     'started': false,
@@ -94,16 +92,17 @@ let game = {
         // TODO
         this.initGame();
     },
-    'initGame': function () {
+    'initGame': async function () {
 
-        // TODO
-        this.wordGenerator.generate();
+        await this.wordGenerator.generate();
         this.word = this.wordGenerator.word;
         this.definition = this.wordGenerator.definition;
 
         this.setMask();
         this.guessCount = 0;
         this.started = true;
+        console.log('!!! Game started !!!');
+        console.log(this);
     },
     'charAlreadyGuessed': function (char) {
         return this.guesses.has(char);
@@ -127,3 +126,5 @@ let game = {
 this.document.onkeyup = function (evt) {
     // TODO
 }
+
+game.initGame();

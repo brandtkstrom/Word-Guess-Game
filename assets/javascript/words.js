@@ -929,7 +929,6 @@ const words = [
     'specialist',
     'taylor',
     'pub',
-    'co-operation',
     'port',
     'incident',
     'representation',
