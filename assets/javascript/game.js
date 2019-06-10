@@ -10,15 +10,24 @@ let wordGenerator = {
     'definition': '',
     'generate': async function () {
 
-        // get random word
-        let randomWord = await this.getRandomWord();
+        try {
 
-        // look up definition
-        let wordDefn = await this.getDefinition(randomWord);
+            // get random word
+            let randomWord = await this.getRandomWord();
 
-        // Update current word and definition fields
-        this.word = randomWord.split('');
-        this.definition = wordDefn;
+            // look up definition
+            let wordDefn = await this.getDefinition(randomWord);
+
+            // Update current word and definition fields
+            this.word = randomWord.split('');
+            this.definition = wordDefn;
+
+        } catch (error) {
+            console.log(`Error generating word: ${error}`);
+        }
+
+        // TODO - handle error case. Set default word/def.
+
     },
     'getRandomWord': async function () {
 
