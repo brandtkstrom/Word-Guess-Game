@@ -3,6 +3,9 @@ const apiUri = 'https://api.wordnik.com/v4';
 const apiKey = '38neaaotr4l4p0b3vujuiu1jg1s7xgg1ydagjylqkrdyz2ieh';
 const apiUriParms = `limit=20&partOfSpeech=noun,adjective,verb&sourceDictionaries=all&includeRelated=false&api_key=${apiKey}`;
 
+const successSound = new Audio('assets/media/game-sound-correct.ogg');
+const wrongSound = new Audio('assets/media/game-sound-wrong.ogg');
+
 // This object contains word information and functions to fetch
 // random words and definitions through external api calls.
 let wordGenerator = {
@@ -81,7 +84,7 @@ let wordGenerator = {
 // This object holds information about the game
 let game = {
     'started': false,
-    'maxGuesses': 12,
+    'maxGuesses': 5,
     'guessCount': 0,
     'wordsMatched': 0,
     'wordGenerator': wordGenerator,
@@ -89,6 +92,9 @@ let game = {
     'mask': [],
     'definition': '',
     'guesses': new Map(),
+    'wordToString': function () {
+        return this.word.join('');
+    },
     'setMask': function () {
         this.mask = [...this.word].fill('_');
     },
@@ -111,6 +117,7 @@ let game = {
         this.setMask();
         this.guessCount = 0;
         this.started = true;
+        this.guesses.clear();
         console.log('!!! Game started !!!');
         console.log(this);
     },
@@ -135,6 +142,10 @@ let game = {
 
         return matchedIndicies.length > 0;
     },
+    'wholeWordGuessed': function () {
+
+        return this.mask.indexOf('_') === -1;
+    },
     'guess': function (char) {
 
         // TODO
@@ -146,16 +157,27 @@ let game = {
         if (this.wordContainsChar(char)) {
 
             console.log(`${char} is a match.`);
+            successSound.play();
             this.updateMask(char);
             // TODO...
             // check to see if word fully guessed
             //      if done, this.wordsMatched++
+            if (this.wholeWordGuessed()) {
+                this.wordsMatched++;
+                // TODO - need function to keep counters and get new word
+                this.initGame();
+            }
             // update counters, generate new word
         } else {
 
             console.log(`${char} is NOT a match.`);
+            wrongSound.play();
             this.guessCount++;
             // TODO...
+            if (this.guessCount >= this.maxGuesses) {
+                // game lost
+                this.initGame();
+            }
         }
     }
 };
