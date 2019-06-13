@@ -3,8 +3,23 @@ const apiUri = 'https://api.wordnik.com/v4';
 const apiKey = '38neaaotr4l4p0b3vujuiu1jg1s7xgg1ydagjylqkrdyz2ieh';
 const apiUriParms = `limit=20&partOfSpeech=noun,adjective,verb&sourceDictionaries=all&includeRelated=false&api_key=${apiKey}`;
 
-const successSound = new Audio('assets/media/game-sound-correct.ogg');
-const wrongSound = new Audio('assets/media/game-sound-wrong.ogg');
+const intro = new Audio('assets/media/intro.mp3');
+const win = new Audio('assets/media/got_duck.mp3');
+const lose = new Audio('assets/media/you_failed.mp3');
+const correct = new Audio('assets/media/duck_flap.mp3');
+const wrong = new Audio('assets/media/duck_lands.mp3');
+const duplicate = new Audio('assets/media/duplicate.mp3');
+const invalid = new Audio('assets/media/invalid.mp3');
+
+const sounds = [intro, win, lose, correct, wrong, duplicate, invalid];
+
+function resetSounds() {
+
+    sounds.forEach(s => {
+        s.pause();
+        s.currentTime = 0;
+    });
+}
 
 // This object contains word information and functions to fetch
 // random words and definitions through external api calls.
@@ -156,6 +171,7 @@ let game = {
     },
     'guess': function (char) {
 
+        let charMatch = false;
         if (this.wordContainsChar(char)) {
 
             console.log(`${char} is a match.`);
@@ -167,6 +183,9 @@ let game = {
                 this.score += this.word.length;
                 console.log(`Word matched! New score: ${this.wordsMatched}`);
             }
+
+            charMatch = true;
+
         } else {
 
             this.guessCount++;
@@ -182,6 +201,7 @@ let game = {
         }
 
         this.playing = !(this.wholeWordGuessed() || this.roundLost());
+        return charMatch;
     }
 };
 
@@ -201,11 +221,13 @@ function updateScreen(game) {
         $('#alert').removeClass('invisible alert-primary alert-warning alert-danger')
             .addClass('visible alert-success')
             .html('<strong>Good job!</strong> You matched the word! Press a key to continue.');
+        win.play();
     } else if (game.roundLost()) {
         wordMask = game.word.join(' ');
         $('#alert').removeClass('invisible alert-primary alert-warning alert-success')
             .addClass('visible alert-danger')
             .html('<strong>You lose!</strong> No guesses remain. The game will now reset.');
+        lose.play();
     }
 
     // Update screen
@@ -218,6 +240,8 @@ function updateScreen(game) {
 };
 
 this.document.onkeyup = async function (evt) {
+
+    resetSounds();
 
     try {
 
@@ -242,6 +266,7 @@ this.document.onkeyup = async function (evt) {
             $('#alert').removeClass('invisible alert-primary alert-success alert-danger')
                 .addClass('visible alert-warning')
                 .html(`You already guessed <strong>${evt.key}</strong>`);
+            duplicate.play();
             return;
         } else {
             // Hide alert
@@ -249,7 +274,13 @@ this.document.onkeyup = async function (evt) {
         }
 
         // Perform guess
-        game.guess(evt.key.toLowerCase());
+        let match = game.guess(evt.key.toLowerCase());
+
+        if (match) {
+            correct.play();
+        } else {
+            wrong.play();
+        }
 
     } catch (err) {
         alert(`Error: ${err.message}`);
@@ -258,8 +289,9 @@ this.document.onkeyup = async function (evt) {
     }
 }
 
+intro.play();
+
 // TODO:
 // consider different api for definitions
 // consider modifying word list
-// add sounds
 // animations?
