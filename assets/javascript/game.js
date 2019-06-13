@@ -100,7 +100,7 @@ let wordGenerator = {
 let game = {
     'playing': false,
     'score': 0,
-    'maxGuesses': 10,
+    'maxGuesses': 6,
     'guessCount': 0,
     'wordsMatched': 0,
     'wordGenerator': wordGenerator,
