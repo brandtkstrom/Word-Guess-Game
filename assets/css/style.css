@@ -4,4 +4,26 @@
     margin: 0;
     position: relative;
     box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+.container {
+    width: 100%;
+}
+
+#game {
+    /* margin: 50px auto; */
+}
+
+#word {
+    text-transform: capitalize;
+    margin: 0 auto;
+    padding: 50px;
+    text-align: justify;
+    text-align: center;
 }

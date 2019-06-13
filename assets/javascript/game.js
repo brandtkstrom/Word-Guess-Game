@@ -83,7 +83,7 @@ let wordGenerator = {
 
 // This object holds information about the game
 let game = {
-    'started': false,
+    'playing': false,
     'maxGuesses': 5,
     'guessCount': 0,
     'wordsMatched': 0,
@@ -104,22 +104,24 @@ let game = {
             this.mask[idx] = char;
         });
     },
-    'startGame': function () {
-        // TODO
-        this.initGame();
-    },
     'initGame': async function () {
 
-        await this.wordGenerator.generate();
-        this.word = this.wordGenerator.word;
-        this.definition = this.wordGenerator.definition;
+        this.wordsMatched = 0;
+        await this.startNewRound();
 
-        this.setMask();
-        this.guessCount = 0;
-        this.started = true;
-        this.guesses.clear();
         console.log('!!! Game started !!!');
         console.log(this);
+    },
+    'startNewRound': async function () {
+
+        await this.wordGenerator.generate();
+
+        this.word = this.wordGenerator.word;
+        this.definition = this.wordGenerator.definition;
+        this.setMask();
+        this.guessCount = 0;
+        this.guesses.clear();
+        this.playing = true;
     },
     'charAlreadyGuessed': function (char) {
 
@@ -146,6 +148,10 @@ let game = {
 
         return this.mask.indexOf('_') === -1;
     },
+    'roundLost': function () {
+
+        return this.guessCount >= this.maxGuesses;
+    },
     'guess': function (char) {
 
         // TODO
@@ -157,36 +163,81 @@ let game = {
         if (this.wordContainsChar(char)) {
 
             console.log(`${char} is a match.`);
-            successSound.play();
             this.updateMask(char);
-            // TODO...
-            // check to see if word fully guessed
-            //      if done, this.wordsMatched++
+
+            // Check to see if word fully guessed
             if (this.wholeWordGuessed()) {
                 this.wordsMatched++;
-                // TODO - need function to keep counters and get new word
-                this.initGame();
+                console.log(`Word matched! New score: ${this.wordsMatched}`);
             }
-            // update counters, generate new word
         } else {
 
-            console.log(`${char} is NOT a match.`);
-            wrongSound.play();
             this.guessCount++;
-            // TODO...
-            if (this.guessCount >= this.maxGuesses) {
+            console.log(`${char} is NOT a match.`);
+
+            // Check to see if any guesses remain 
+            if (this.roundLost()) {
                 // game lost
-                this.initGame();
+                console.log(`No guesses remain. You lose!`);
             }
         }
+
+        this.playing = !(this.wholeWordGuessed() || this.roundLost());
     }
 };
 
-this.document.onkeyup = function (evt) {
-    // TODO
-    // check if game started -> start if not
+function updateScreen(game) {
 
-    game.guess(evt.key);
+    // Calculate remaining guesses
+    let remainingGuesses = game.maxGuesses - game.guessCount;
+
+    // Update word mask
+    let wordMask = game.mask.join(' ');
+
+    // Update guessed characters
+    let guessedChars = [...game.guesses.keys()].join(', ');
+
+    // Update screen
+    $('#hint').text(game.definition);
+    $('#word').text(wordMask);
+    $('#guessCt').text(remainingGuesses);
+    $('#wins').text(game.wordsMatched);
+    $('#guesses').text(guessedChars);
+};
+
+this.document.onkeyup = async function (evt) {
+
+    // Validate input
+    if (evt.keyCode < 65 ||
+        evt.keyCode > 90) {
+        console.log(`Invalid key pressed: "${evt.key}"`);
+        return;
+    }
+
+    try {
+
+        // check if game started -> start if not
+        if (!game.playing) {
+            $('#message').text('');
+            await game.startNewRound();
+            return;
+        }
+
+        // Perform guess
+        game.guess(evt.key);
+
+        // Check to see if this round has ended
+        if (game.wholeWordGuessed()) {
+            $('#message').text(`Word matched! Press any key to generate a new word.`);
+        } else if (game.roundLost()) {
+            $('#message').text(`You lose! No guesses remain. Press any key to reset the game.`);
+            $('#word').text(game.wordToString());
+            game.wordsMatched = 0;
+        }
+
+    } catch (err) {
+        alert(`Error: ${err.message}`);
+    } finally {
+        updateScreen(game);
+    }
 }
-
-game.initGame();
