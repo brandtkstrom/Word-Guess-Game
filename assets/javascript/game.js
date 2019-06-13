@@ -84,6 +84,7 @@ let wordGenerator = {
 // This object holds information about the game
 let game = {
     'playing': false,
+    'score': 0,
     'maxGuesses': 5,
     'guessCount': 0,
     'wordsMatched': 0,
@@ -107,6 +108,7 @@ let game = {
     'initGame': async function () {
 
         this.wordsMatched = 0;
+        this.score = 0;
         await this.startNewRound();
 
         console.log('!!! Game started !!!');
@@ -162,6 +164,7 @@ let game = {
             // Check to see if word fully guessed
             if (this.wholeWordGuessed()) {
                 this.wordsMatched++;
+                this.score += this.word.length;
                 console.log(`Word matched! New score: ${this.wordsMatched}`);
             }
         } else {
@@ -172,6 +175,8 @@ let game = {
             // Check to see if any guesses remain 
             if (this.roundLost()) {
                 // game lost
+                this.wordsMatched = 0;
+                this.score = 0;
                 console.log(`No guesses remain. You lose!`);
             }
         }
@@ -191,10 +196,23 @@ function updateScreen(game) {
     // Update guessed characters
     let guessedChars = [...game.guesses.keys()].join(', ');
 
+    // Update alert
+    if (game.wholeWordGuessed()) {
+        $('#alert').removeClass('invisible alert-primary alert-warning alert-danger')
+            .addClass('visible alert-success')
+            .html('<strong>Good job!</strong> You matched the word!');
+    } else if (game.roundLost()) {
+        wordMask = game.word.join('');
+        $('#alert').removeClass('invisible alert-primary alert-warning alert-success')
+            .addClass('visible alert-danger')
+            .html('<strong>You lose!</strong> No guesses remain. The game will now reset.');
+    }
+
     // Update screen
     $('#hint').text(game.definition);
     $('#word').text(wordMask);
     $('#guessCt').text(remainingGuesses);
+    $('#score').text(game.score);
     $('#wins').text(game.wordsMatched);
     $('#guesses').text(guessedChars);
 };
@@ -209,6 +227,7 @@ this.document.onkeyup = async function (evt) {
             await game.startNewRound();
             return;
         }
+
         // Validate input
         if (evt.keyCode < 65 || evt.keyCode > 90) {
             console.log(`Invalid key pressed: "${evt.key}"`);
@@ -218,25 +237,16 @@ this.document.onkeyup = async function (evt) {
         // Check to see if character already guessed
         if (game.charAlreadyGuessed(evt.key)) {
             $('#alert').removeClass('invisible alert-primary alert-success alert-danger')
-                .addClass('visible alert-info')
-                .html('<strong>Good job!</strong> You matched the word!');
+                .addClass('visible alert-warning')
+                .html(`You already guessed <strong>${evt.key}</strong>`);
             return;
+        } else {
+            // Hide alert
+            $('#alert').removeClass('visible').addClass('invisible');
         }
 
         // Perform guess
         game.guess(evt.key.toLowerCase());
-
-        // Check to see if this round has ended
-        if (game.wholeWordGuessed()) {
-            $('#alert').removeClass('invisible alert-primary alert-info alert-danger')
-                .addClass('visible alert-success')
-                .html('<strong>Good job!</strong> You matched the word!');
-        } else if (game.roundLost()) {
-            $('#alert').removeClass('invisible alert-primary alert-info alert-success')
-                .addClass('visible alert-danger')
-                .html('<strong>You lose!</strong> No guesses remain. The game will now reset.');
-            game.wordsMatched = 0;
-        }
 
     } catch (err) {
         alert(`Error: ${err.message}`);
