@@ -257,3 +257,9 @@ this.document.onkeyup = async function (evt) {
         updateScreen(game);
     }
 }
+
+// TODO:
+// consider different api for definitions
+// consider modifying word list
+// add sounds
+// animations?
