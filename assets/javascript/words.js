@@ -236,8 +236,6 @@ const WORDS = [
     'behaviour',
     'treatment',
     'energy',
-    'st',
-    'peter',
     'income',
     'cup',
     'scheme',

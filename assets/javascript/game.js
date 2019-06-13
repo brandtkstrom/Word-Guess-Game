@@ -3,6 +3,7 @@ const apiUri = 'https://api.wordnik.com/v4';
 const apiKey = '38neaaotr4l4p0b3vujuiu1jg1s7xgg1ydagjylqkrdyz2ieh';
 const apiUriParms = `limit=20&partOfSpeech=noun,adjective,verb&sourceDictionaries=all&includeRelated=false&api_key=${apiKey}`;
 
+// Game sounds
 const intro = new Audio('assets/media/intro.mp3');
 const win = new Audio('assets/media/got_duck.mp3');
 const lose = new Audio('assets/media/you_failed.mp3');
@@ -13,6 +14,7 @@ const invalid = new Audio('assets/media/invalid.mp3');
 
 const sounds = [intro, win, lose, correct, wrong, duplicate, invalid];
 
+// Function to force sound resets
 function resetSounds() {
 
     sounds.forEach(s => {
