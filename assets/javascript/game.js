@@ -200,9 +200,9 @@ function updateScreen(game) {
     if (game.wholeWordGuessed()) {
         $('#alert').removeClass('invisible alert-primary alert-warning alert-danger')
             .addClass('visible alert-success')
-            .html('<strong>Good job!</strong> You matched the word!');
+            .html('<strong>Good job!</strong> You matched the word! Press a key to continue.');
     } else if (game.roundLost()) {
-        wordMask = game.word.join('');
+        wordMask = game.word.join(' ');
         $('#alert').removeClass('invisible alert-primary alert-warning alert-success')
             .addClass('visible alert-danger')
             .html('<strong>You lose!</strong> No guesses remain. The game will now reset.');
@@ -231,6 +231,9 @@ this.document.onkeyup = async function (evt) {
         // Validate input
         if (evt.keyCode < 65 || evt.keyCode > 90) {
             console.log(`Invalid key pressed: "${evt.key}"`);
+            $('#alert').removeClass('invisible alert-primary alert-success alert-danger')
+                .addClass('visible alert-warning')
+                .html(`<strong>"${evt.key}"</strong> is not a valid guess.`);
             return;
         }
 
