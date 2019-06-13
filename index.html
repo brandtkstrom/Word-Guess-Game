@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100">
 
     <head>
         <meta charset="UTF-8">
@@ -9,21 +9,74 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     </head>
 
-    <body>
-        <div class="container">
+    <body class="h-100 text-monospace  bg-dark text-light">
+        <div class="container text-center">
 
-            <h1>Random Word Generator</h1>
-            <h2>Can you guess the word?</h2>
-            <hr>
-            <section id="game">
-                <p><span id="word"></span></p>
-                <p>Hint: <span id="hint"></span></p>
-                <p>Remaining Guesses: <span id="guessCt"></span></p>
-                <p>Words Matched: <span id="wins"></span></p>
-                <p>Guesses: <span id="guesses"></span></p>
-                <p id="message"></p>
-            </section>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <h1 class="display-3 text-weight-bold mt-5">GUESS THE WORD</h1>
+                    <br>
+                </div>
+            </div>
 
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div id='alert' class="alert alert-primary my-0">
+                        <strong>Welcome!</strong> Press any key to begin.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="jumbotron text-light bg-dark py-3 px-3 my-5 border border-light">
+                        <h2 id="word" class="display-3">? ? ? ? ?</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+
+                <div class="col-md-4 justify-content-center">
+                    <div class="card bg-light text-dark mb-3">
+                        <div class="card-header">Wins</div>
+                        <div class="card-body">
+                            <p id="wins" class="card-text"> </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 justify-content-center">
+                    <div class="card bg-light text-dark mb-3">
+                        <div class="card-header">Remaining Guesses</div>
+                        <div class="card-body">
+                            <p id="guessCt" class="card-text"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+
+                <div class="col-md-4 justify-content-center">
+                    <div class="card bg-light text-dark mb-3">
+                        <div class="card-header">Hint</div>
+                        <div class="card-body">
+                            <p id="hint" class="card-text"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card bg-light text-dark mb-3">
+                        <div class="card-header">Guesses</div>
+                        <div class="card-body">
+                            <p id="guesses" class="card-text"></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         <!-- Load scripts and jQuery -->

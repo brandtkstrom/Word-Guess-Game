@@ -207,31 +207,30 @@ function updateScreen(game) {
 
 this.document.onkeyup = async function (evt) {
 
-    // Validate input
-    if (evt.keyCode < 65 ||
-        evt.keyCode > 90) {
-        console.log(`Invalid key pressed: "${evt.key}"`);
-        return;
-    }
-
     try {
 
         // check if game started -> start if not
         if (!game.playing) {
-            $('#message').text('');
+            $('#alert').removeClass('visible').addClass('invisible');
             await game.startNewRound();
+            return;
+        }
+        // Validate input
+        if (evt.keyCode < 65 || evt.keyCode > 90) {
+            console.log(`Invalid key pressed: "${evt.key}"`);
             return;
         }
 
         // Perform guess
-        game.guess(evt.key);
+        game.guess(evt.key.toLowerCase());
 
         // Check to see if this round has ended
         if (game.wholeWordGuessed()) {
-            $('#message').text(`Word matched! Press any key to generate a new word.`);
+            $('#alert').removeClass('invisible alert-primary alert-danger').addClass('visible alert-success')
+                .html('<strong>Good job!</strong> You matched the word!');
         } else if (game.roundLost()) {
-            $('#message').text(`You lose! No guesses remain. Press any key to reset the game.`);
-            $('#word').text(game.wordToString());
+            $('#alert').removeClass('invisible alert-primary alert-success').addClass('visible alert-danger')
+                .html('<strong>You lose!</strong> No guesses remain. The game will now reset.');
             game.wordsMatched = 0;
         }
 
