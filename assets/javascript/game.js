@@ -154,12 +154,6 @@ let game = {
     },
     'guess': function (char) {
 
-        // TODO
-        if (this.charAlreadyGuessed(char)) {
-
-            console.log(`${char} already guessed.`);
-            return;
-        }
         if (this.wordContainsChar(char)) {
 
             console.log(`${char} is a match.`);
@@ -221,15 +215,25 @@ this.document.onkeyup = async function (evt) {
             return;
         }
 
+        // Check to see if character already guessed
+        if (game.charAlreadyGuessed(evt.key)) {
+            $('#alert').removeClass('invisible alert-primary alert-success alert-danger')
+                .addClass('visible alert-info')
+                .html('<strong>Good job!</strong> You matched the word!');
+            return;
+        }
+
         // Perform guess
         game.guess(evt.key.toLowerCase());
 
         // Check to see if this round has ended
         if (game.wholeWordGuessed()) {
-            $('#alert').removeClass('invisible alert-primary alert-danger').addClass('visible alert-success')
+            $('#alert').removeClass('invisible alert-primary alert-info alert-danger')
+                .addClass('visible alert-success')
                 .html('<strong>Good job!</strong> You matched the word!');
         } else if (game.roundLost()) {
-            $('#alert').removeClass('invisible alert-primary alert-success').addClass('visible alert-danger')
+            $('#alert').removeClass('invisible alert-primary alert-info alert-success')
+                .addClass('visible alert-danger')
                 .html('<strong>You lose!</strong> No guesses remain. The game will now reset.');
             game.wordsMatched = 0;
         }
