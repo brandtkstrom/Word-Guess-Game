@@ -45,9 +45,6 @@ let wordGenerator = {
         } catch (error) {
             console.log(`Error generating word: ${error}`);
         }
-
-        // TODO - handle error case. Set default word/def.
-
     },
     'getRandomWord': function () {
 
@@ -102,7 +99,7 @@ let wordGenerator = {
 let game = {
     'playing': false,
     'score': 0,
-    'maxGuesses': 6,
+    'maxGuesses': 10,
     'guessCount': 0,
     'wordsMatched': 0,
     'wordGenerator': wordGenerator,
@@ -292,8 +289,3 @@ this.document.onkeyup = async function (evt) {
 }
 
 this.document.addEventListener("DOMContentLoaded", () => intro.play());
-
-// TODO:
-// consider different api for definitions
-// consider modifying word list
-// animations?
