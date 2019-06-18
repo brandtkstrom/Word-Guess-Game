@@ -16,7 +16,6 @@ const sounds = [intro, win, lose, correct, wrong, duplicate, invalid];
 
 // Function to force sound resets
 function resetSounds() {
-
     sounds.forEach(s => {
         s.pause();
         s.currentTime = 0;
@@ -26,12 +25,10 @@ function resetSounds() {
 // This object contains word information and functions to fetch
 // random words and definitions through external api calls.
 let wordGenerator = {
-    'word': [],
-    'definition': '',
-    'generate': async function () {
-
+    word: [],
+    definition: '',
+    generate: async function() {
         try {
-
             // get random word
             let randomWord = this.getRandomWord();
 
@@ -41,13 +38,11 @@ let wordGenerator = {
             // Update current word and definition fields
             this.word = randomWord.split('');
             this.definition = wordDefn;
-
         } catch (error) {
             console.log(`Error generating word: ${error}`);
         }
     },
-    'getRandomWord': function () {
-
+    getRandomWord: function() {
         // Pulls a random word from the 'WORDS' array - in words.js
         let randomNum = Math.floor(Math.random() * WORDS.length);
         let word = WORDS[randomNum];
@@ -55,15 +50,13 @@ let wordGenerator = {
 
         return word;
     },
-    'getDefinition': async function (word) {
-
+    getDefinition: async function(word) {
         // Retrieves a definition for our word using the Wordnik API.
         let resource = `word.json/${word}/definitions`;
         let requestUri = `${apiUri}/${resource}?${apiUriParms}`;
 
         let response = await fetch(requestUri);
         if (response.status !== 200) {
-
             // Unknown error encountered. Just return no hint in this case.
             console.log(`Error fetching word definition: ${response.message}`);
             return 'Sorry, no hint this time!';
@@ -72,14 +65,15 @@ let wordGenerator = {
         let definitions = await response.json();
 
         // Find a definition that exists for our word.
-        let wordDefinition = definitions.find(d => d.text && typeof (d.text) === 'string');
+        let wordDefinition = definitions.find(
+            d => d.text && typeof d.text === 'string'
+        );
         let formatted = this.formatText(wordDefinition.text);
 
         console.log(`Word definition: ${formatted}`);
         return formatted;
     },
-    'formatText': function (text) {
-
+    formatText: function(text) {
         // Strips special characters, tags, and extra whitespace from the provided string.
         let specialCharsRegex = /[<]{1}[/]?[a-z"= ]{1,}[>]{1}|\s+[.]{1}$/gi;
         let excessSpaceRegex = /\s{2,}/g;
@@ -97,30 +91,29 @@ let wordGenerator = {
 
 // This object holds information about the game
 let game = {
-    'playing': false,
-    'score': 0,
-    'maxGuesses': 10,
-    'guessCount': 0,
-    'wordsMatched': 0,
-    'wordGenerator': wordGenerator,
-    'word': [],
-    'mask': [],
-    'definition': '',
-    'guesses': new Map(),
-    'wordToString': function () {
+    playing: false,
+    score: 0,
+    maxGuesses: 10,
+    guessCount: 0,
+    wordsMatched: 0,
+    wordGenerator: wordGenerator,
+    word: [],
+    mask: [],
+    definition: '',
+    guesses: new Map(),
+    wordToString: function() {
         return this.word.join('');
     },
-    'setMask': function () {
+    setMask: function() {
         this.mask = [...this.word].fill('_');
     },
-    'updateMask': function (char) {
+    updateMask: function(char) {
         let matches = this.guesses.get(char);
         matches.forEach(idx => {
             this.mask[idx] = char;
         });
     },
-    'initGame': async function () {
-
+    initGame: async function() {
         this.wordsMatched = 0;
         this.score = 0;
         await this.startNewRound();
@@ -128,8 +121,7 @@ let game = {
         console.log('!!! Game started !!!');
         console.log(this);
     },
-    'startNewRound': async function () {
-
+    startNewRound: async function() {
         await this.wordGenerator.generate();
 
         this.word = this.wordGenerator.word;
@@ -139,13 +131,11 @@ let game = {
         this.guesses.clear();
         this.playing = true;
     },
-    'charAlreadyGuessed': function (char) {
-
+    charAlreadyGuessed: function(char) {
         // Checks to see if this char has already been guessed.
         return this.guesses.has(char);
     },
-    'wordContainsChar': function (char) {
-
+    wordContainsChar: function(char) {
         // Does our word contain the provided (guessed) char? If so,
         // note the matching indicies and return True or False.
         let matchedIndicies = [];
@@ -160,19 +150,15 @@ let game = {
 
         return matchedIndicies.length > 0;
     },
-    'wholeWordGuessed': function () {
-
+    wholeWordGuessed: function() {
         return this.mask.indexOf('_') === -1;
     },
-    'roundLost': function () {
-
+    roundLost: function() {
         return this.guessCount >= this.maxGuesses;
     },
-    'guess': function (char) {
-
+    guess: function(char) {
         let charMatch = false;
         if (this.wordContainsChar(char)) {
-
             console.log(`${char} is a match.`);
             this.updateMask(char);
 
@@ -184,13 +170,11 @@ let game = {
             }
 
             charMatch = true;
-
         } else {
-
             this.guessCount++;
             console.log(`${char} is NOT a match.`);
 
-            // Check to see if any guesses remain 
+            // Check to see if any guesses remain
             if (this.roundLost()) {
                 // game lost
                 this.wordsMatched = 0;
@@ -205,7 +189,6 @@ let game = {
 };
 
 function updateScreen(game) {
-
     // Calculate remaining guesses
     let remainingGuesses = game.maxGuesses - game.guessCount;
 
@@ -217,15 +200,21 @@ function updateScreen(game) {
 
     // Update alert
     if (game.wholeWordGuessed()) {
-        $('#alert').removeClass('invisible alert-primary alert-warning alert-danger')
+        $('#alert')
+            .removeClass('invisible alert-primary alert-warning alert-danger')
             .addClass('visible alert-success')
-            .html('<strong>Good job!</strong> You matched the word! Press a key to continue.');
+            .html(
+                '<strong>Good job!</strong> You matched the word! Press a key to continue.'
+            );
         win.play();
     } else if (game.roundLost()) {
         wordMask = game.word.join(' ');
-        $('#alert').removeClass('invisible alert-primary alert-warning alert-success')
+        $('#alert')
+            .removeClass('invisible alert-primary alert-warning alert-success')
             .addClass('visible alert-danger')
-            .html('<strong>You lose!</strong> No guesses remain. The game will now reset.');
+            .html(
+                '<strong>You lose!</strong> No guesses remain. The game will now reset.'
+            );
         lose.play();
     }
 
@@ -236,17 +225,17 @@ function updateScreen(game) {
     $('#score').text(game.score);
     $('#wins').text(game.wordsMatched);
     $('#guesses').text(guessedChars);
-};
+}
 
-this.document.onkeyup = async function (evt) {
-
+this.document.onkeyup = async function(evt) {
     resetSounds();
 
     try {
-
         // check if game started -> start if not
         if (!game.playing) {
-            $('#alert').removeClass('visible').addClass('invisible');
+            $('#alert')
+                .removeClass('visible')
+                .addClass('invisible');
             await game.startNewRound();
             return;
         }
@@ -254,7 +243,10 @@ this.document.onkeyup = async function (evt) {
         // Validate input
         if (evt.keyCode < 65 || evt.keyCode > 90) {
             console.log(`Invalid key pressed: "${evt.key}"`);
-            $('#alert').removeClass('invisible alert-primary alert-success alert-danger')
+            $('#alert')
+                .removeClass(
+                    'invisible alert-primary alert-success alert-danger'
+                )
                 .addClass('visible alert-warning')
                 .html(`<strong>"${evt.key}"</strong> is not a valid guess.`);
             return;
@@ -262,14 +254,19 @@ this.document.onkeyup = async function (evt) {
 
         // Check to see if character already guessed
         if (game.charAlreadyGuessed(evt.key)) {
-            $('#alert').removeClass('invisible alert-primary alert-success alert-danger')
+            $('#alert')
+                .removeClass(
+                    'invisible alert-primary alert-success alert-danger'
+                )
                 .addClass('visible alert-warning')
                 .html(`You already guessed <strong>${evt.key}</strong>`);
             duplicate.play();
             return;
         } else {
             // Hide alert
-            $('#alert').removeClass('visible').addClass('invisible');
+            $('#alert')
+                .removeClass('visible')
+                .addClass('invisible');
         }
 
         // Perform guess
@@ -280,12 +277,14 @@ this.document.onkeyup = async function (evt) {
         } else {
             wrong.play();
         }
-
     } catch (err) {
         alert(`Error: ${err.message}`);
     } finally {
         updateScreen(game);
     }
-}
+};
 
-this.document.addEventListener("DOMContentLoaded", () => intro.play());
+this.document.addEventListener('DOMContentLoaded', () => {
+    sounds.forEach(s => s.load());
+    intro.play();
+});
