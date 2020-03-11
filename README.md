@@ -1,6 +1,4 @@
-# Word-Guess-Game
-
-Assignment 3 - Word Guess Game
+# Word Guess Game
 
 This is a simple game where you have to guess a random word. Each word is randomly selected with a hint that displays a definition for the word. 
 
